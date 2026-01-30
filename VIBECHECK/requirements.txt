@@ -1,6 +1,0 @@
-flask
-requests
-numpy==1.26.4
-mediapipe==0.10.9
-opencv-python-headless==4.8.0.74
-gunicorn
