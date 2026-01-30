@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIBE CHECK | AI Interview Coach</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Favicon (optional) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='80'>🎯</text></svg>">
+</head>
+
+<body>
+    <!-- Background Elements -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+
+    <div class="dashboard">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <span class="logo-icon">🎯</span>
+                <span class="logo-text">VIBE<span class="logo-accent">CHECK</span></span>
+            </div>
+            
+            <div class="header-center">
+                <div class="session-timer" id="sessionTimer">00:00</div>
+            </div>
+            
+            <div class="header-right">
+                <button class="btn-icon" onclick="openHelp()" title="Help">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="10" cy="10" r="8"/>
+                        <path d="M10 14v.5M10 6a2 2 0 012 2c0 1-2 1.5-2 2.5"/>
+                    </svg>
+                </button>
+                <div class="status-indicator">
+                    <span id="statusDot" class="status-dot"></span>
+                    <span id="statusText" class="status-label">System Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Video Container -->
+        <div class="video-section">
+            <div class="video-container">
+                <img id="videoElement" src="{{ url_for('video_feed') }}" alt="Camera Feed">
+                <div class="video-overlay">
+                    <div class="recording-indicator" id="recordingIndicator">
+                        <span class="recording-dot"></span>
+                        <span>RECORDING</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Sidebar -->
+        <div class="sidebar">
+            <div class="stat-card stat-primary">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-content">
+                    <div class="stat-label">Eye Contact</div>
+                    <div class="stat-value" id="eyeScore">0<span class="stat-unit">%</span></div>
+                    <div class="stat-status" id="eyeStatus">Waiting...</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-warning">
+                <div class="stat-icon">💬</div>
+                <div class="stat-content">
+                    <div class="stat-label">Filler Words</div>
+                    <div class="stat-value" id="fillerCount">0</div>
+                    <div class="stat-hint">um, uh, like, etc.</div>
+                </div>
+            </div>
+
+            <div class="stat-card stat-info">
+                <div class="stat-icon">🎭</div>
+                <div class="stat-content">
+                    <div class="stat-label">Sentiment</div>
+                    <div class="stat-value" id="sentimentText">Neutral</div>
+                    <div class="sentiment-bar">
+                        <div class="sentiment-fill" id="sentimentBar" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Tips Card -->
+            <div class="tips-card">
+                <div class="tips-header">💡 Live Tips</div>
+                <div class="tips-content" id="liveTips">
+                    Click "Start Session" to begin
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Panel -->
+        <div class="bottom-panel">
+            <!-- Transcript Box -->
+            <div class="transcript-section">
+                <div class="transcript-header">
+                    <span class="transcript-title">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="3" cy="8" r="2"/>
+                            <circle cx="8" cy="8" r="2"/>
+                            <circle cx="13" cy="8" r="2"/>
+                        </svg>
+                        LIVE TRANSCRIPT
+                    </span>
+                    <span class="word-count" id="wordCount">0 words</span>
+                </div>
+                <div class="transcript-box" id="transcriptBox">
+                    <div class="transcript-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z"/>
+                            <path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4M8 22h8"/>
+                        </svg>
+                        <p>Say something to start real-time analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button class="btn btn-primary btn-start" id="startBtn" onclick="startSession()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5 3l12 7-12 7z"/>
+                    </svg>
+                    <span>Start Session</span>
+                </button>
+                
+                <button class="btn btn-danger btn-stop" id="stopBtn" onclick="endSession()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <rect x="4" y="4" width="12" height="12" rx="2"/>
+                    </svg>
+                    <span>End & Analyze</span>
+                </button>
+
+                <div class="control-info">
+                    <div class="info-item">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="8" cy="8" r="7" stroke="currentColor" fill="none" stroke-width="2"/>
+                            <path d="M8 5v3l2 2"/>
+                        </svg>
+                        <span id="duration">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackOverlay" class="modal-overlay">
+        <div class="modal-content feedback-modal">
+            <div class="modal-header">
+                <h2>
+                    <span class="modal-icon">🎯</span>
+                    AI Coach Report
+                </h2>
+                <button class="btn-close" onclick="closeFeedback()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>🧠 Analyzing your performance with AI...</p>
+                </div>
+                
+                <div class="feedback-content" id="aiReport" style="display: none;">
+                    <!-- AI feedback will be inserted here -->
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeFeedback()">Close Report</button>
+                <button class="btn btn-primary" onclick="startNewSession()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M13 3L3 13M3 3l10 10"/>
+                    </svg>
+                    New Session
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpOverlay" class="modal-overlay">
+        <div class="modal-content help-modal">
+            <div class="modal-header">
+                <h2>
+                    <span class="modal-icon">📚</span>
+                    How to Use VIBE CHECK
+                </h2>
+                <button class="btn-close" onclick="closeHelp()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="help-steps">
+                    <div class="help-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Grant Permissions</h3>
+                            <p>Click "Start Session" and allow camera + microphone access when prompted by your browser.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="help-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Practice Your Interview</h3>
+                            <p>Look at the camera (center crosshair) for best eye contact score. Speak naturally and clearly.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="help-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Monitor Real-time Metrics</h3>
+                            <p>Watch your eye contact score, filler word count, and sentiment analysis update live.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="help-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Get AI Feedback</h3>
+                            <p>Click "End & Analyze" to receive detailed coaching from our AI. Listen to voice feedback too!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="help-tips">
+                    <h3>💡 Pro Tips</h3>
+                    <ul>
+                        <li><strong>Eye Contact:</strong> Green = Excellent (80%+), Yellow = Good (60-80%), Red = Needs work</li>
+                        <li><strong>Duration:</strong> Practice for at least 30-60 seconds for meaningful feedback</li>
+                        <li><strong>Environment:</strong> Use in a well-lit, quiet space for best results</li>
+                        <li><strong>Browser:</strong> Chrome or Edge recommended for best performance</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeHelp()">Got it, let's start!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
